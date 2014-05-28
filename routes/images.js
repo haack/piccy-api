@@ -5,7 +5,7 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('imagedb', server);
+db = new Db('imagesdb', server);
  
 db.open(function(err, db) {
     if(!err) {
@@ -28,12 +28,16 @@ exports.findById = function(req, res) {
 };
 
 exports.findRandom = function(req, res) {
-	var id = Math.floor((Math.random() * 10) + 1); //between 1 and 10
-	console.log('Selecting random image. id: ' + id);
     db.collection('images', function(err, collection) {
-        collection.findOne({'id':id}, function(err, item) {
-            res.send(item);
+        collection.count(function(err, count) {
+            console.log("size: " + count);
+            var id = Math.floor((Math.random() * count) + 1); //between 1 and 10
+            console.log('Selecting random image. id: ' + id);
+            collection.findOne({'id':id}, function(err, item) {
+                res.send(item);
+            });    
         });
+        
     });
 };
 
